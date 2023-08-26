@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 
-public class AppstoreHandler : MonoBehaviour
+public class AppstoreHandler : Singleton<AppstoreHandler> 
 {
 	#if UNITY_IPHONE
 	[DllImport ("__Internal")] private static extern void _OpenAppInStore(int appID);
@@ -13,30 +13,14 @@ public class AppstoreHandler : MonoBehaviour
 	private static AndroidJavaObject jo;
 	#endif
 
-	private static AppstoreHandler _instance;
-
-	public static AppstoreHandler Instance
-	{
-		get { return _instance; }
-		private set { _instance = value; }
-	}
-
 	void Awake()
 	{
-		if (Instance == null) {
-			Instance = this;
-			DontDestroyOnLoad (gameObject);
-		}
-		else {
-			Destroy(gameObject);
-			return;
-		}
-
 		if(!Application.isEditor)
 		{
 			#if UNITY_ANDROID
 			jo = new AndroidJavaObject("com.purplelilgirl.nativeappstore.NativeAppstore");
 			#endif
+			
 		}	else
 		{	Debug.Log("AppstoreHandler:: Cannot open Appstore in Editor.");
 		}
